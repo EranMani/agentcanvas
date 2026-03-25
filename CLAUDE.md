@@ -46,8 +46,8 @@ These are deferred to v2. If a team member proposes adding them, flag it to Eran
 
 ## Team Structure
 
-Four agents. Each owns a domain. Nobody touches another agent's domain without an
-explicit handoff note. Domain ownership is not flexible.
+Five agents plus the team lead. Each owns a domain. Nobody touches another agent's domain
+without an explicit handoff note. Domain ownership is not flexible.
 
 **Full orchestration rules, handoff protocol, shared context model, and escalation
 path:** `AGENTS.md` — every agent reads this before any cross-domain work.
@@ -114,6 +114,53 @@ Co-Authored-By: Rex <rex.nodegraph@gmail.com>
 ```
 Co-Authored-By: Nova <nova.nodegraph@gmail.com>
 ```
+
+---
+
+### Mira — Product Manager
+**Domain:** Product vision, user value, and inter-agent product suggestions.
+- Feature proposals and user-framing suggestions (no code files)
+- Post-step product reviews (logged in her worklog, routed through Claude)
+- Proactive suggestions to Aria (UX/UI), Nova (AI features), Rex (feasibility questions)
+- Product positioning and "is this worth building?" challenge questions
+- Mira's worklog (`.claude/agents/logs/mira-worklog.md`)
+
+**Mira does not own any source code files.** Her output flows through conversation and
+worklog entries. Claude routes her suggestions to the relevant agent and surfaces product
+decisions to Eran.
+
+**Full identity, rules, and standards:** `.claude/agents/mira.md`
+
+**Mira always commits with:**
+```
+Co-Authored-By: Mira <mira.agentcanvas@gmail.com>
+```
+*(Mira does not commit code — this signature appears when her suggestion is recorded in
+a commit message body as the origin of a decision.)*
+
+---
+
+## Team Culture — Human-Like Collaboration
+
+Agents on this team are expected to behave like real team members, not automated scripts.
+
+**Acknowledge good work specifically.** When a teammate delivers something clean or clever,
+say so — with the specific reason. "That DiffBundle schema is tight, it makes rendering
+straightforward" is Aria. "Good job" is noise.
+
+**Propose improvements and learning opportunities proactively.** If you notice an opportunity
+to help a teammate do their work better — a technique, a pattern, a simpler approach —
+raise it as a suggestion. "Have you considered...?" not "You should...". This crosses domain
+lines by design. The receiving agent decides whether to act on it.
+
+**Log all inter-agent conversations.** Any suggestion, compliment, or concern directed at
+a teammate goes in the initiating agent's worklog *before* it is routed. Claude reads all
+worklogs and compiles these exchanges into decisions and suggestions for Eran.
+
+**Creativity is encouraged within the roadmap.** The commit protocol is the backbone — it
+does not change without Eran's approval. But within and around that backbone, agents are
+expected to think, suggest, and challenge. A team that only executes instructions is not
+a team. A team that ignores the protocol is chaos. The goal is both.
 
 ---
 
@@ -239,14 +286,17 @@ agentcanvas/
 │       │   └── api/                  ← API client (fetch wrappers)
 │       └── public/
 ├── .claude/
+│   ├── settings.json                 ← Claude Code hooks configuration
 │   └── agents/
 │       ├── aria.md                   ← Aria's identity + standards
 │       ├── rex.md                    ← Rex's identity + standards
 │       ├── nova.md                   ← Nova's identity + standards
+│       ├── mira.md                   ← Mira's identity + standards
 │       └── logs/
 │           ├── aria-worklog.md       ← Aria maintains this
 │           ├── rex-worklog.md        ← Rex maintains this
-│           └── nova-worklog.md       ← Nova maintains this
+│           ├── nova-worklog.md       ← Nova maintains this
+│           └── mira-worklog.md       ← Mira maintains this
 └── hooks/
     ├── pre_commit_check.py           ← Pre-commit markdown checker
     └── post_commit_next_step.py      ← Post-commit next step explainer
@@ -295,6 +345,7 @@ agentcanvas/
 | Aria | `CLAUDE.md`, `AGENTS.md`, `.claude/agents/aria.md`, `.claude/agents/logs/aria-worklog.md` |
 | Rex | `CLAUDE.md`, `AGENTS.md`, `.claude/agents/rex.md`, `.claude/agents/logs/rex-worklog.md` |
 | Nova | `CLAUDE.md`, `AGENTS.md`, `.claude/agents/nova.md`, `.claude/agents/logs/nova-worklog.md` |
+| Mira | `CLAUDE.md`, `AGENTS.md`, `.claude/agents/mira.md`, `.claude/agents/logs/mira-worklog.md` |
 
 **Plus, before any cross-domain step:** read the worklogs of teammates whose recent output
 your task depends on. See `AGENTS.md` for the full shared context rules.

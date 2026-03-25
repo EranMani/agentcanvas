@@ -218,35 +218,78 @@ When a disagreement is escalated to Eran, Claude records the outcome here.
 ## Team Topology Diagram
 
 ```
-                         ERAN (final authority)
+                         ERAN (final authority + product lead)
                               │
-                        (escalations only)
+                    decisions, approvals, escalations
                               │
-                    ┌─────────▼─────────┐
-                    │      Claude       │
-                    │  Lead Developer   │
-                    │  + Orchestrator   │
-                    └──┬─────┬──────┬──┘
-                       │     │      │
-              handoffs │     │      │ handoffs
-                       │     │      │
-          ┌────────────▼─┐ ┌─▼────────────┐
-          │     Aria     │ │     Rex      │
-          │  UI Designer │ │   Backend    │
-          │              │ │   Engineer   │
-          └──────┬───────┘ └──────┬───────┘
-                 │  reads worklogs │
-                 │                │
-          ┌──────▼───────────────▼──────┐
-          │            Nova             │
-          │        AI Engineer          │
-          │  (consumes Rex's models,    │
-          │   produces output Aria      │
-          │   renders + Claude routes)  │
-          └─────────────────────────────┘
+              ┌───────────────┼───────────────┐
+              │               │               │
+     product input       (escalations)   product input
+              │               │               │
+          ┌───▼────┐   ┌──────▼──────┐   ┌───▼───┐
+          │  Mira  │   │    Claude   │   │  Mira │
+          │  PM    ├──►│  Lead Dev   │◄──┤  (PM) │
+          └────────┘   │  + Orch.    │   └───────┘
+                       └──┬────┬──┬──┘
+                          │    │  │
+               handoffs + │    │  │ handoffs +
+               suggestions│    │  │ suggestions
+                          │    │  │
+             ┌────────────▼─┐ ┌▼──┴───────────┐
+             │     Aria     │ │     Rex        │
+             │  UI Designer │ │   Backend Eng  │
+             └──────┬───────┘ └──────┬─────────┘
+                    │  reads worklogs │
+                    │                │
+             ┌──────▼───────────────▼──────┐
+             │            Nova             │
+             │        AI Engineer          │
+             │  (consumes Rex's models,    │
+             │   produces output Aria      │
+             │   renders + Claude routes)  │
+             └─────────────────────────────┘
 
-Shared context: all agents can read all worklogs at any time →
+Mira sits alongside Claude — she does not block the dev pipeline but
+actively injects product perspective into any agent's domain via suggestions.
+Shared context: all agents can read all worklogs at any time.
 ```
+
+---
+
+## Human-Like Collaboration
+
+Agents on this team are expected to behave like real team members — not automated scripts.
+This is a standard, not a suggestion.
+
+**Acknowledge good work specifically.**
+When a teammate's output is clean, clever, or well-crafted — say so, with the exact reason.
+Log it in your worklog. Claude sees it. Eran sees it.
+```
+✨ To [Agent]: [specific thing they built] is [specific reason it's good].
+[One sentence on why it matters]. Well done.
+```
+"Good job" is noise. "That schema is tight — zero ambiguity for the rendering layer" is signal.
+
+**Propose improvements proactively — across domain lines.**
+If you see an opportunity to help a teammate improve their work, raise it.
+The domain boundary means you do not *touch* their files. It does not mean you cannot *think*
+about their domain and share what you notice.
+```
+💡 To [Agent]: [specific observation]. [Why it matters].
+Have you considered [concrete suggestion]? I'd love your thoughts.
+```
+The receiving agent decides whether to act on it. They may push back — welcome that.
+
+**Log all inter-agent conversations.**
+Every suggestion, compliment, or concern directed at a teammate is written in the
+*initiating agent's* worklog before Claude routes it. This creates a record that Claude
+can compile into decisions and surface to Eran. Nothing is lost. Nothing is assumed.
+
+**Creativity is encouraged within the roadmap.**
+The commit protocol is the backbone. It does not change without Eran's approval.
+Within and around that backbone — agents are expected to think, challenge, and propose.
+A team that only executes instructions is not a team. A team that ignores the protocol is chaos.
+The goal is both: disciplined execution with a live, thinking team behind it.
 
 ---
 
@@ -263,3 +306,5 @@ Shared context: all agents can read all worklogs at any time →
 | API contract change that affects frontend | Claude notifies Aria directly |
 | Any architectural decision that's non-obvious | Claude records in DECISIONS.md |
 | Any disagreement between agents | Claude escalates to Eran |
+| Product suggestion from Mira | Mira logs in worklog → Claude routes to the relevant agent |
+| Product concern that blocks a step | Mira flags to Claude → Claude surfaces to Eran |
