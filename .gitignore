@@ -1,0 +1,22 @@
+# Claude Code local settings — machine-specific, never commit
+.claude/settings.local.json
+
+# Environment variables — secrets must never be committed
+.env
+src/backend/.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+.uv/
+
+# Node
+node_modules/
+dist/
+.pnpm-store/
+
+# OS
+.DS_Store
+Thumbs.db
