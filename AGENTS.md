@@ -249,9 +249,15 @@ When a disagreement is escalated to Eran, Claude records the outcome here.
              │   renders + Claude routes)  │
              └─────────────────────────────┘
 
-Mira sits alongside Claude — she does not block the dev pipeline but
-actively injects product perspective into any agent's domain via suggestions.
+Mira and Adam sit alongside Claude — neither blocks the dev pipeline.
+Mira injects product perspective; Adam owns the infrastructure layer.
 Shared context: all agents can read all worklogs at any time.
+
+Adam ──────────────────────────────────────────────────────┐
+(DevOps)  CI/CD, Docker, cloud, env management             │
+          Does not touch src/ — flags infra-affecting       │
+          issues in app code to Claude                      │
+──────────────────────────────────────────────────────── (routes)
 ```
 
 ---
@@ -308,3 +314,6 @@ The goal is both: disciplined execution with a live, thinking team behind it.
 | Any disagreement between agents | Claude escalates to Eran |
 | Product suggestion from Mira | Mira logs in worklog → Claude routes to the relevant agent |
 | Product concern that blocks a step | Mira flags to Claude → Claude surfaces to Eran |
+| Infra issue affecting app code | Adam logs 🐛 CROSS-DOMAIN FINDING → Claude routes to domain owner |
+| Cloud/deployment feasibility question | Any agent → Adam (via Claude) |
+| Secrets or env var concern | Adam flags to Claude → Claude notifies the affected agent |

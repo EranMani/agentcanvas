@@ -46,7 +46,7 @@ These are deferred to v2. If a team member proposes adding them, flag it to Eran
 
 ## Team Structure
 
-Five agents plus the team lead. Each owns a domain. Nobody touches another agent's domain
+Six agents plus the team lead. Each owns a domain. Nobody touches another agent's domain
 without an explicit handoff note. Domain ownership is not flexible.
 
 **Full orchestration rules, handoff protocol, shared context model, and escalation
@@ -137,6 +137,30 @@ Co-Authored-By: Mira <mira.agentcanvas@gmail.com>
 ```
 *(Mira does not commit code — this signature appears when her suggestion is recorded in
 a commit message body as the origin of a decision.)*
+
+---
+
+### Adam — DevOps Engineer
+**Domain:** Infrastructure, CI/CD, deployment, and environment management.
+- GitHub Actions workflows (`.github/workflows/**`)
+- Docker configuration (`Dockerfile`, `docker-compose.yml`, `.dockerignore`)
+- Infrastructure as code — cloud config (AWS, Render, Railway, etc.)
+- Environment management — `.env.example`, secrets strategy, env var documentation
+- Local development tooling — `Makefile`, dev setup scripts
+- Deployment scripts and runbooks
+- Adam's worklog (`.claude/agents/logs/adam-worklog.md`)
+
+**Current phase:** AgentCanvas is a demo — no Docker or cloud required to run locally.
+Adam's priority is CI/CD setup and planning the v2 infrastructure, not adding complexity
+to the demo sprint. When Eran gives the go-ahead for v2, Adam executes the full
+containerisation and cloud deployment strategy.
+
+**Full identity, rules, and standards:** `.claude/agents/adam.md`
+
+**Adam always commits with:**
+```
+Co-Authored-By: Adam <adam.agentcanvas@gmail.com>
+```
 
 ---
 
@@ -292,11 +316,13 @@ agentcanvas/
 │       ├── rex.md                    ← Rex's identity + standards
 │       ├── nova.md                   ← Nova's identity + standards
 │       ├── mira.md                   ← Mira's identity + standards
+│       ├── adam.md                   ← Adam's identity + standards
 │       └── logs/
 │           ├── aria-worklog.md       ← Aria maintains this
 │           ├── rex-worklog.md        ← Rex maintains this
 │           ├── nova-worklog.md       ← Nova maintains this
-│           └── mira-worklog.md       ← Mira maintains this
+│           ├── mira-worklog.md       ← Mira maintains this
+│           └── adam-worklog.md       ← Adam maintains this
 └── hooks/
     ├── pre_commit_check.py           ← Pre-commit markdown checker
     └── post_commit_next_step.py      ← Post-commit next step explainer
@@ -346,6 +372,7 @@ agentcanvas/
 | Rex | `CLAUDE.md`, `AGENTS.md`, `.claude/agents/rex.md`, `.claude/agents/logs/rex-worklog.md` |
 | Nova | `CLAUDE.md`, `AGENTS.md`, `.claude/agents/nova.md`, `.claude/agents/logs/nova-worklog.md` |
 | Mira | `CLAUDE.md`, `AGENTS.md`, `.claude/agents/mira.md`, `.claude/agents/logs/mira-worklog.md` |
+| Adam | `CLAUDE.md`, `AGENTS.md`, `.claude/agents/adam.md`, `.claude/agents/logs/adam-worklog.md` |
 
 **Plus, before any cross-domain step:** read the worklogs of teammates whose recent output
 your task depends on. See `AGENTS.md` for the full shared context rules.
