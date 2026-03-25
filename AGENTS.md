@@ -165,19 +165,20 @@ complete and Agent B is unblocked. It is never implied — it is always written.
 
 ```
 Rex (models) → Nova (agents consume NodeSpec, GraphDiff)
-Rex (models) → Claude (API routes use NodeSpec, Graph, NodeOutput)
-Rex (executor) → Claude (API routes wire executor calls)
-Nova (agent output shapes) → Claude (API routes return agent output)
+Rex (API contract) → Aria (components and store call these endpoints — shapes must match)
+Rex (executor) → Nova (agents need to understand execution interface for LLM node)
+Nova (agent output shapes) → Rex (API routes return agent output — Rex wires the route)
 Nova (agent output shapes) → Aria (DiffCard renders DiffBundle, chat renders OrchestratorDecision)
-Claude (API contract) → Aria (components call these endpoints)
-Claude (graph store) → Aria (save/load UI calls these endpoints)
-Aria (component API) → Claude (hooks and store wire to these components)
+Aria (component API) → Rex (hooks and store wire to Rex's endpoints)
 ```
 
 The most critical handoff in the project is **Nova → Aria** for Phase 4.
 Nova's agent output shapes directly determine what Aria renders in the DiffCard and
 chat panel. If Nova changes `OrchestratorDecision` or `DiffBundle`, Aria must know
 immediately — this is the handoff most likely to cause silent breakage if skipped.
+
+The second most critical handoff is **Rex → Aria**. Rex owns the API contract;
+Aria's store and hooks call it. If Rex changes an endpoint shape or URL, Aria breaks silently.
 
 ---
 
@@ -190,13 +191,13 @@ from another before work can begin. Claude identifies these and sequences them.
 |---|---|---|---|
 | Step 6 — Canvas node renderer | Aria | Rex | `NodeSpec` shape (labels, port structure) confirmed |
 | Step 9 — Node editor panel | Aria | Rex | `NodeSpec.code` field confirmed, `NodeSpec.config` shape |
-| Step 15 — SSE endpoint | Claude | Rex | `NodeOutput` model finalised |
-| Step 16 — Canvas execution states | Aria | Claude | SSE event format and `NodeOutput` fields confirmed |
+| Step 15 — SSE endpoint | Rex | Rex (self) | `NodeOutput` model finalised — Rex owns both |
+| Step 16 — Canvas execution states | Aria | Rex | SSE event format and `NodeOutput` fields confirmed |
 | Step 17 — Node agent | Nova | Rex | `NodeSpec`, `GraphDiff` models confirmed |
 | Step 18 — Graph-writer agent | Nova | Rex | `NodeSpec`, `DiffBundle`, `DiffAction` models confirmed |
-| Step 19 — Orchestrator | Nova | Rex + Claude | Both models and API endpoint contracts confirmed |
-| Step 20 — Agent API endpoints | Claude | Nova | All three agent return types (`OrchestratorDecision`, `DiffBundle`) confirmed |
-| Step 21 — AI chat panel + DiffCard | Aria | Nova + Claude | `DiffBundle`, `OrchestratorDecision` shapes + endpoint URLs confirmed |
+| Step 19 — Orchestrator | Nova | Rex | Models and API endpoint contracts confirmed |
+| Step 20 — Agent API endpoints | Rex | Nova | All three agent return types (`OrchestratorDecision`, `DiffBundle`) confirmed |
+| Step 21 — AI chat panel + DiffCard | Aria | Nova + Rex | `DiffBundle`, `OrchestratorDecision` shapes + endpoint URLs confirmed |
 | Step 23 — LLM node | Nova | Rex | `NodeSpec` config shape and executor integration point confirmed |
 
 For each of these steps, Claude checks the prerequisite is met before invoking the
@@ -218,46 +219,34 @@ When a disagreement is escalated to Eran, Claude records the outcome here.
 ## Team Topology Diagram
 
 ```
-                         ERAN (final authority + product lead)
+                    ERAN (team lead + product owner)
                               │
-                    decisions, approvals, escalations
-                              │
-              ┌───────────────┼───────────────┐
-              │               │               │
-     product input       (escalations)   product input
-              │               │               │
-          ┌───▼────┐   ┌──────▼──────┐   ┌───▼───┐
-          │  Mira  │   │    Claude   │   │  Mira │
-          │  PM    ├──►│  Lead Dev   │◄──┤  (PM) │
-          └────────┘   │  + Orch.    │   └───────┘
-                       └──┬────┬──┬──┘
-                          │    │  │
-               handoffs + │    │  │ handoffs +
-               suggestions│    │  │ suggestions
-                          │    │  │
-             ┌────────────▼─┐ ┌▼──┴───────────┐
-             │     Aria     │ │     Rex        │
-             │  UI Designer │ │   Backend Eng  │
-             └──────┬───────┘ └──────┬─────────┘
-                    │  reads worklogs │
-                    │                │
-             ┌──────▼───────────────▼──────┐
-             │            Nova             │
-             │        AI Engineer          │
-             │  (consumes Rex's models,    │
-             │   produces output Aria      │
-             │   renders + Claude routes)  │
-             └─────────────────────────────┘
+                    ┌─────────▼──────────┐
+                    │      Claude        │
+                    │  Pure Orchestrator │  ← zero code files
+                    │  reads all logs    │
+                    └──┬──────────────┬──┘
+              handoffs │              │ handoffs
+                       │              │
+             ┌─────────▼───┐   ┌──────▼──────────┐
+             │     Rex     │   │      Aria        │
+             │ Full Backend│   │  Full Frontend   │
+             │ src/backend/│   │  src/frontend/   │
+             └──────┬──────┘   └─────────────────┘
+                    │ models + API contract
+             ┌──────▼──────────────────┐
+             │         Nova            │
+             │      AI Engineer        │
+             │  agents consume Rex's   │
+             │  models; output flows   │
+             │  to Rex (routes) +      │
+             │  Aria (UI rendering)    │
+             └─────────────────────────┘
 
-Mira and Adam sit alongside Claude — neither blocks the dev pipeline.
-Mira injects product perspective; Adam owns the infrastructure layer.
+  Mira (PM) ──► product suggestions to any agent, routed via Claude
+  Adam (DevOps) ──► owns .github/workflows/, Docker, infra — no src/ files
+
 Shared context: all agents can read all worklogs at any time.
-
-Adam ──────────────────────────────────────────────────────┐
-(DevOps)  CI/CD, Docker, cloud, env management             │
-          Does not touch src/ — flags infra-affecting       │
-          issues in app code to Claude                      │
-──────────────────────────────────────────────────────── (routes)
 ```
 
 ---

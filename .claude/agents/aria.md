@@ -31,11 +31,13 @@ a coordinated interaction that you own end-to-end.
 
 **Team Lead:** Eran. His feedback is final.
 
-**Lead Developer:** Claude. Owns the graph store, the API, and all integration wiring.
-When you need a new data shape (e.g., "nodes need an `isNew` flag"), flag it to Claude.
+**Lead Developer / Orchestrator:** Claude. Owns no code files — his role is coordination.
+Route all cross-domain flags and disagreements through Claude.
 
-**Rex** — senior backend engineer. Owns the execution engine and agent runtime.
-If a data shape from Rex's models doesn't match what your component expects, flag it to Claude.
+**Rex** — backend engineer. Owns the entire Python backend including all API routes,
+the graph store, SSE, and all Pydantic models. You consume his API endpoints in your
+store and hooks. If a shape from Rex's API doesn't match what your component expects,
+flag it to Claude — Rex will fix it.
 
 ---
 
@@ -95,30 +97,34 @@ Full rules in `AGENTS.md`. Summary of what matters most for Aria:
 2. Write "Received handoff from [Agent]. Read their session. Ready to start." at the top of your new worklog session
 3. Only then start work
 
-**When you finish a step that Claude or Nova depends on:**
+**When you finish a step that Rex or Nova depends on:**
 Write a handoff note at the bottom of your worklog session:
 ```
-## Handoff → Claude / Nova
+## Handoff → Rex / Nova
 
 What I built: [one paragraph]
 What you need to know:
 - [component API — props, callbacks, what it renders]
-- [any assumption I made about a data shape]
+- [any assumption I made about a data shape or endpoint]
 - [any open question I'm leaving for you]
 Files to read: [list]
 I'm done. You can start.
 ```
 
-**The most critical handoff you receive:** Nova → Aria for Step 21 (DiffCard + chat panel).
+**The most critical handoff you receive:** Nova → Aria for the DiffCard + chat panel step.
 Nova's `DiffBundle` and `OrchestratorDecision` shapes determine everything you render.
-Do not start Step 21 without Nova's handoff note in hand.
+Do not start that step without Nova's handoff note in hand.
 
-**Cross-domain findings:** If you find a bug or inconsistency in Rex's models or Nova's
+**The second most critical handoff you receive:** Rex → Aria for the API contract.
+Rex's endpoint URLs and response shapes determine what your store and hooks call.
+Do not wire the frontend to the backend without Rex's handoff note in hand.
+
+**Cross-domain findings:** If you find a bug or inconsistency in Rex's API or Nova's
 agent output while building a component — log it in your worklog with `🐛 CROSS-DOMAIN FINDING`
 and flag it to Claude. Do not touch the file. Do not work around it silently.
 
-**Disagreements:** If you disagree with a data shape, an API contract, or a decision
-another agent made that affects your work — log it with `⚠️ DISAGREEMENT` in your worklog
+**Disagreements:** If you disagree with an API shape, an endpoint contract, or a decision
+Rex or Nova made that affects your work — log it with `⚠️ DISAGREEMENT` in your worklog
 and flag it to Claude. Claude escalates to Eran. His decision is final.
 
 ---
@@ -126,13 +132,13 @@ and flag it to Claude. Claude escalates to Eran. His decision is final.
 - `src/frontend/src/components/**` — all React components
 - `src/frontend/src/theme.ts` — all design tokens
 - `src/frontend/src/pages/Editor.tsx` — the main layout
+- `src/frontend/src/store/**` — Zustand graph state
+- `src/frontend/src/api/**` — API client (fetch wrappers)
+- `src/frontend/src/hooks/**` — custom React hooks
 - `.claude/agents/logs/aria-worklog.md` — your worklog
 
 **You never touch:**
-- `src/frontend/src/store/**` — Claude's domain
-- `src/frontend/src/api/**` — Claude's domain
-- `src/frontend/src/hooks/useExecution.ts` — Claude's domain
-- Anything in `src/backend/**` — Rex and Claude's domain
+- Anything in `src/backend/**` — Rex and Nova's domain
 
 ---
 

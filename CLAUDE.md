@@ -52,15 +52,14 @@ without an explicit handoff note. Domain ownership is not flexible.
 **Full orchestration rules, handoff protocol, shared context model, and escalation
 path:** `AGENTS.md` — every agent reads this before any cross-domain work.
 
-### Claude — Lead Developer
-**Domain:** Everything not explicitly owned by Aria or Rex.
-- FastAPI backend (`src/backend/**`)
-- LangGraph agent runtime (`src/backend/agents/**`)
-- Graph execution engine (`src/backend/executor/**`)
-- All project-level markdown (`CLAUDE.md`, `ARCHITECTURE.md`, `DECISIONS.md`, `GLOSSARY.md`, `TASKS.md`)
+### Claude — Lead Developer & Orchestrator
+**Domain:** Pure orchestration — zero code files owned.
+- All project-level markdown (`CLAUDE.md`, `ARCHITECTURE.md`, `DECISIONS.md`, `GLOSSARY.md`, `TASKS.md`, `AGENTS.md`)
 - Commit protocol (`commit-protocol.md`)
-- React Flow graph state (`src/frontend/store/**`)
-- All integration wiring between frontend and backend
+- Reading and routing all agent worklogs
+- Tracking and sequencing handoffs between agents
+- Escalating decisions and disagreements to Eran
+- Maintaining shared context so every agent has accurate information before they start
 
 **Claude always commits with:**
 ```
@@ -68,10 +67,13 @@ Co-Authored-By: Claude <claude@anthropic.com>
 ```
 
 ### Aria — UI Designer
-**Domain:** All things visual and experiential.
-- React components (`src/frontend/components/**`)
-- Design tokens (`src/frontend/theme.ts`)
-- Page layouts (`src/frontend/pages/**`)
+**Domain:** The entire frontend.
+- React components (`src/frontend/src/components/**`)
+- Design tokens (`src/frontend/src/theme.ts`)
+- Page layouts (`src/frontend/src/pages/**`)
+- Zustand graph state (`src/frontend/src/store/**`)
+- API client — fetch wrappers (`src/frontend/src/api/**`)
+- Custom React hooks (`src/frontend/src/hooks/**`)
 - Aria's worklog (`.claude/agents/logs/aria-worklog.md`)
 
 **Full identity, rules, and standards:** `.claude/agents/aria.md`
@@ -82,12 +84,17 @@ Co-Authored-By: Aria <aria.nodegraph@gmail.com>
 ```
 
 ### Rex — Backend Engineer
-**Domain:** Python execution engine and node type system.
+**Domain:** The entire Python backend.
+- FastAPI app entry point (`src/backend/main.py`)
+- Settings and env vars (`src/backend/config.py`)
+- All API routes (`src/backend/api/routes.py`)
+- SSE streaming helpers (`src/backend/api/sse.py`)
+- JSON graph storage (`src/backend/storage/graph_store.py`)
+- Pydantic models (`src/backend/models/**`)
 - Graph executor — topological sort, node runner (`src/backend/executor/**`)
 - RestrictedPython sandbox (`src/backend/executor/sandbox.py`)
 - Input hash cache (`src/backend/executor/cache.py`)
 - Node type registry and port type definitions (`src/backend/nodes/registry.py`, `src/backend/nodes/types.py`)
-- Pydantic models (`src/backend/models/**`)
 - Rex's worklog (`.claude/agents/logs/rex-worklog.md`)
 
 **Full identity, rules, and standards:** `.claude/agents/rex.md`

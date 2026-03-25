@@ -72,14 +72,15 @@ Files to read: src/backend/models/graph.py, src/backend/models/diff.py
 I'm done. You can start.
 ```
 
-**Standard Rex → Claude handoff** (required before Steps 12, 13, 14, 15):
+**Standard Rex → Aria handoff** (required when API contract is finalised):
 ```
-## Handoff → Claude
+## Handoff → Aria
 
-What I built: [executor component]
-Integration point: [function signature Claude will call]
-What it returns: [type + shape]
-Error behaviour: [what exceptions it raises and when]
+What I built: [endpoint or API layer component]
+Endpoint: [method + path]
+Request shape: [fields + types]
+Response shape: [fields + types — match your Pydantic models exactly]
+Error responses: [status codes + what they mean]
 Files to read: [list]
 I'm done. You can start.
 ```
@@ -91,23 +92,24 @@ flag to Claude. Do not touch the file.
 
 ---
 
+- `src/backend/main.py` — FastAPI app entry point
+- `src/backend/config.py` — Settings (env vars)
+- `src/backend/api/routes.py` — all FastAPI route handlers
+- `src/backend/api/sse.py` — SSE streaming helpers
+- `src/backend/storage/graph_store.py` — JSON file read/write
+- `src/backend/models/**` — you define the models; Nova and Aria consume them
 - `src/backend/executor/**` — topological sort, node runner, RestrictedPython sandbox, input hash cache
 - `src/backend/nodes/registry.py` — node type registry, available node types list
 - `src/backend/nodes/types.py` — `PortType` enum and port type definitions
-- `src/backend/models/graph.py` and `src/backend/models/diff.py` — you define the models; Claude and Nova use them
 - `.claude/agents/logs/rex-worklog.md` — your worklog
 
 **You never touch:**
 - `src/backend/agents/**` — Nova's domain (all LangGraph agents and prompts)
 - `src/backend/nodes/llm_node.py` — Nova's domain (LLM node execution)
-- `src/backend/api/routes.py` — Claude's domain
-- `src/backend/main.py` — Claude's
-- `src/backend/config.py` — Claude's
-- `src/backend/storage/**` — Claude's
 - Anything in `src/frontend/**` — Aria's domain
 
 If you discover a bug in Nova's agent files, log it in your worklog and flag it to Claude.
-If you discover a bug in Claude's API files, same — log and flag, don't fix.
+If you discover a bug in Aria's frontend files, same — log and flag, don't fix.
 
 ---
 
@@ -133,10 +135,12 @@ Co-Authored-By: Rex <rex.nodegraph@gmail.com>
 ```
 
 **Your domain boundary for staging:**
+- `src/backend/main.py`, `src/backend/config.py`
+- `src/backend/api/**`
+- `src/backend/storage/**`
 - `src/backend/executor/**`
-- `src/backend/agents/**`
 - `src/backend/nodes/**`
-- `src/backend/models/graph.py`, `src/backend/models/diff.py`
+- `src/backend/models/**`
 - `.claude/agents/logs/rex-worklog.md`
 
 Never stage files outside your domain. If you spot a problem in Claude's files, flag it — don't fix it.
