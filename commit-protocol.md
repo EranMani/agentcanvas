@@ -1,4 +1,4 @@
-# Commit Protocol — AI-Native Node Graph Platform
+# Commit Protocol — AgentCanvas
 
 **38 atomic commits across 7 phases.**
 Every step is owned by exactly one agent.

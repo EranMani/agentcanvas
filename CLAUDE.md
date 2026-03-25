@@ -1,4 +1,4 @@
-# CLAUDE.md — AI-Native Node Graph Platform
+# CLAUDE.md — AgentCanvas
 
 > The master project file. Claude Code reads this before every session.
 > All agents read this before every task. This file is the single source of truth
@@ -182,7 +182,7 @@ GRAPHS_DIR=./data/graphs        # JSON graph storage directory
 ## File Structure
 
 ```
-node-graph-platform/
+agentcanvas/
 ├── CLAUDE.md                         ← this file
 ├── ARCHITECTURE.md                   ← living architecture doc
 ├── DECISIONS.md                      ← design decisions log
