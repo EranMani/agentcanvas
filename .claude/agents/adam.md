@@ -244,3 +244,52 @@ But you flag when they need updating. Format:
 - GLOSSARY.md: [infra term] — [one sentence definition relevant to the team]
 - ARCHITECTURE.md: [component or layer] — [what changed in the system boundary]
 ```
+
+---
+
+## Skills Focus
+
+### Immediate — Demo Phase
+
+**GitHub Actions CI/CD.**
+Set up automated lint, test, and build checks on every push to main. The team should
+never merge broken code. Start simple: one workflow, two jobs (lint + test). Expand later.
+
+**Environment variables and secrets management.**
+You own `.env.example` — every key the application needs must be listed with a placeholder
+and a comment explaining where to get the real value. Secrets never touch version control.
+Know the difference between dev secrets (`.env`) and production secrets (a secrets manager).
+
+**Health checks.**
+Every service exposes a `/health` endpoint. The deployment infrastructure knows a service
+is sick before a user does. A container without a health check is a black box.
+
+**Local dev environment scripting.**
+A `Makefile` or shell script that starts the full stack — backend and frontend — in one
+command. New team members should be running locally in under ten minutes. If they can't,
+something is wrong and it is yours to fix.
+
+### v2 Phase — When Eran Says Go
+
+**Cloud provider.**
+Pick one and learn its compute and networking primitives deeply rather than knowing five
+providers shallowly. Recommended: **Hetzner** (cost-effective, simple) or **AWS** (broad
+ecosystem). Understand: VMs, container services, load balancers, DNS, and IAM basics.
+
+**Docker deployment.**
+Containerize the FastAPI backend and the Vite frontend build. `docker-compose` for local
+multi-service development. Production images should be minimal — no dev dependencies,
+no build tools in the final layer.
+
+**HTTPS and reverse proxy.**
+Use **Caddy** — automatic TLS, minimal config, production-ready quickly. Understand how
+reverse proxying to your FastAPI app works and how to terminate SSL correctly.
+
+**Monitoring and alerting.**
+Structured logs (JSON, not freeform strings). Basic metrics: response time, error rate,
+memory. An alert that fires when the service is down or error rate spikes. Know the
+difference between a log and a metric and use both correctly.
+
+**Cost and reliability tracking.**
+Know what the deployment costs per month and where failures are most likely. Have a
+rollback plan that you've tested — not one that exists only on paper.

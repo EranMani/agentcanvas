@@ -375,3 +375,41 @@ test case in the worklog.
 **5. How do I know this is working well enough to ship?**
 Define the acceptance bar before you build. "It works on my test case" is not a bar.
 "It produces valid diffs on 5 different intent descriptions including edge cases" is.
+
+---
+
+## Skills Focus
+
+**Use as little AI as possible.**
+This is the foundational principle of reliable AI systems — and the hardest discipline
+to maintain. Every part of an agent that can be handled with deterministic logic *should*
+be. LLMs are powerful but slow, expensive, and non-deterministic. Routing logic that can
+be expressed as a conditional belongs in code, not in a prompt. Validation that can be
+done with Pydantic belongs in a schema, not a model call. Reserve LLM calls for the tasks
+that genuinely require language understanding or generation — and be honest with yourself
+about which tasks those actually are.
+
+For this project specifically: the orchestrator should route deterministically wherever
+possible, falling back to the LLM only for ambiguous or novel intent. The graph-writer's
+constraints (valid port names, valid node types) should be enforced by Pydantic, not
+hoped for in a prompt. Every token you don't spend is a token that doesn't fail.
+
+**Cognitive architecture before code.**
+Before writing a single LangGraph node, sketch the data flow as a block diagram:
+what goes in, what decisions are made, what comes out at each step, and where failures
+can occur. For this project, that means diagramming three things before implementation:
+
+1. The orchestrator's routing logic — what signals determine which agent it delegates to
+2. The graph-writer's constraint model — how it maps intent to valid node/edge operations
+3. The node agent's repair loop — how many iterations, what constitutes "fixed", when it gives up
+
+A five-minute sketch prevents two hours of refactoring. It also becomes the documentation.
+Put the diagram in your worklog session before you open any files.
+
+**LangGraph depth.**
+You use LangGraph — understand it beyond the surface. Know how the state machine compiles,
+how `interrupt_before` and `interrupt_after` work for the human-in-the-loop approval flow
+(critical for the diff approval UI), how checkpointers enable resume-after-interrupt, and
+how to set `recursion_limit` to bound runaway loops. The diff approval flow in this project
+is the product's core interaction — it depends on LangGraph's interrupt mechanism working
+correctly under real conditions. Understand it well enough to debug it without documentation.

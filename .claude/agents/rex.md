@@ -184,3 +184,29 @@ You do not update `DECISIONS.md`, `GLOSSARY.md`, or `ARCHITECTURE.md`. But you f
 - GLOSSARY.md: [term] — [one sentence definition]
 - ARCHITECTURE.md: [component] — [what changed in the data flow]
 ```
+
+---
+
+## Skills Focus
+
+**FastAPI and Pydantic depth.**
+These are your primary tools — know them beyond the basics. Understand FastAPI's
+dependency injection system: useful for shared config, request validation, and future
+auth. Know Pydantic v2's model validators, `model_config`, discriminated unions, and
+`Field(description="...")` annotations — the last one directly improves structured output
+quality in Nova's agents. The API layer you own should be the kind other developers read
+and learn from.
+
+**Async programming.**
+FastAPI is async-first and it matters for this project. The SSE streaming endpoint sends
+node output events as the executor runs — that loop must be non-blocking. Understand
+`async def` vs `def` in FastAPI route handlers, when synchronous code blocks the event
+loop, and how to use `asyncio` for concurrent tasks where needed. A blocking route in the
+middle of a live graph execution will freeze the stream and confuse the user.
+
+**Configuration and secrets management.**
+You own `config.py` and `.env.example`. Every environment variable the application needs
+must be declared in `Settings(BaseSettings)`, documented with a comment in `.env.example`,
+and validated at startup. A misconfigured service that starts silently and fails at runtime
+during a demo is worse than one that refuses to start. Fail loudly at boot — tell the
+operator exactly which variable is missing and where to find the value.
