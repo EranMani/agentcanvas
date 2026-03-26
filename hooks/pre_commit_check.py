@@ -18,10 +18,13 @@ def main() -> None:
 
     checklist = (
         "PRE-COMMIT MARKDOWN CHECK — confirm before committing:\n"
-        "  □ ARCHITECTURE.md  — new component, data flow, or system boundary introduced?\n"
-        "  □ DECISIONS.md     — non-obvious design or technical choice made this step?\n"
-        "  □ GLOSSARY.md      — new concept or term introduced (e.g. GraphDiff, DiffBundle, port type)?\n"
-        "  □ TASKS.md         — any out-of-protocol work items discovered that need tracking?\n"
+        "  □ ARCHITECTURE.md      — new component, data flow, or system boundary introduced?\n"
+        "  □ DECISIONS.md         — non-obvious design or technical choice made this step?\n"
+        "  □ GLOSSARY.md          — new concept or term introduced?\n"
+        "  □ TASKS.md             — any out-of-protocol work items discovered?\n"
+        "  □ learning_concepts.md — did this step introduce a concept worth explaining to Eran?\n"
+        "                           Only add an entry if the concept is non-obvious or interesting.\n"
+        "                           Wiring and boilerplate steps can skip this. 1–2 concepts max.\n"
         "If any box applies and the file was not updated, stop and update it first.\n"
         "\n"
         "HANDOFF CHECK — does this commit produce output another agent depends on?\n"
