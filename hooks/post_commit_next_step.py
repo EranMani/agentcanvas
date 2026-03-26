@@ -18,13 +18,16 @@ def main() -> None:
 
     message = (
         "Commit successful. "
-        "Read commit-protocol.md to identify the next step. "
-        "Then read AGENTS.md to check whether this step requires a prerequisite handoff "
-        "from another agent before work can begin. "
-        "Determine which team member owns that step (Claude, Aria, Rex, or Nova). "
-        "Concisely explain: what you will build, which agent will do it, and whether any "
-        "cross-agent coordination is needed first — "
-        "then ask Eran for permission to proceed."
+        "You MUST now display a next-step summary to Eran in your response — every time, "
+        "no exceptions, including housekeeping and documentation commits. "
+        "Read commit-protocol.md to identify the next protocol step not yet committed. "
+        "Then output ALL of the following in your reply:\n"
+        "  1. Step number and commit message\n"
+        "  2. Owner (which agent)\n"
+        "  3. 2-3 sentences on what will be built and why it matters at this point\n"
+        "  4. Any cross-agent coordination or prerequisite handoff needed before starting\n"
+        "  5. Ask Eran: 'Shall I invoke [agent]?'\n"
+        "Do not skip this. Do not summarise it into one line. Eran uses this to follow along."
     )
 
     print(json.dumps({
