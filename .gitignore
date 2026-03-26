@@ -18,6 +18,15 @@ node_modules/
 dist/
 .pnpm-store/
 
+# Python tooling artifacts
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Graph data — JSON graphs are runtime data; only the demo graph is tracked
+data/graphs/*.json
+!data/graphs/demo.json
+
 # OS
 .DS_Store
 Thumbs.db
