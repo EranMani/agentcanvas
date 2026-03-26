@@ -1,6 +1,7 @@
-# Claude Code local settings and internal memory — never commit
+# Claude Code local settings, internal memory, and learning notes — never commit
 .claude/settings.local.json
 memory/
+learning_concepts.md
 
 # Environment variables — secrets must never be committed
 .env
