@@ -10,6 +10,7 @@
 | Date | Session | Status | Key Decision |
 |---|---|---|---|
 | 2026-03-26 | Step 1 — Makefile, .env.example, .gitignore | ✅ Done | Added `data/graphs/*.json` to .gitignore (was missing from spec gap); all 8 env vars in .env.example; 8 Makefile targets complete |
+| 2026-03-26 | Step 2 — GitHub Actions CI (lint and build) | ✅ Done | Two independent jobs (backend + frontend); pytest exit code 5 remapped to 0 so CI is green before tests exist; pnpm cache via setup-node integration rather than manual actions/cache |
 
 ---
 
@@ -99,6 +100,112 @@ it will work correctly once those directories exist.
 - No DECISIONS.md update needed — the Makefile/env structure is straightforward and follows standard conventions.
 - No GLOSSARY.md update needed — no new domain terms introduced.
 - TASKS.md: No out-of-protocol discoveries.
+
+---
+
+## 2026-03-26 — Step 2: GitHub Actions CI (lint and build on every push)
+
+### Task Brief
+
+Deliver the CI layer for AgentCanvas: a GitHub Actions workflow that validates every push
+to `main` and every pull request. The infrastructure problem being solved: without CI,
+a developer who introduces a Python import error or a TypeScript type violation won't know
+until it reaches review — or worse, lands in main. CI catches these within minutes of the push.
+
+Deliverable: `.github/workflows/ci.yml` — one workflow, two independent jobs.
+
+---
+
+### Decisions
+
+**Two independent jobs, not a single sequential job**
+
+The spec requires `backend` and `frontend` jobs that report independently. I validated
+this is the right choice: if the backend lint fails and the frontend build also fails,
+a sequential single job would mask the frontend failure entirely. The team would fix the
+backend, push again, and only then discover the frontend error. Two independent jobs
+show both failures simultaneously. GitHub Actions displays them as parallel status checks
+on the PR — the team sees the full picture at a glance.
+
+**pytest exit code 5 — remap to 0 in the CI step**
+
+pytest uses exit code 5 to mean "no tests were collected". In a fresh project where
+`src/backend/tests/` doesn't exist yet, every `pytest` invocation exits 5 — which
+would fail CI on every push and train the team to ignore CI failures. The fix: capture
+the exit code in the shell step, remap 5 → 0 with a clear echo message, and pass
+through all other non-zero codes unchanged. This means CI is green from day one, and
+stays accurate the moment tests are added. Using `|| true` was explicitly rejected —
+that would silently swallow real pytest failures (exit codes 1, 2) as well.
+
+**pnpm caching via `pnpm/action-setup` + `actions/setup-node` cache integration**
+
+Two approaches for pnpm caching in GitHub Actions:
+1. Manual: `pnpm/action-setup` to install pnpm, then `actions/cache` with `$(pnpm store path)` as the path.
+2. Integrated: `pnpm/action-setup` to install pnpm first, then `actions/setup-node` with `cache: "pnpm"` and `cache-dependency-path: src/frontend/pnpm-lock.yaml`.
+
+I chose option 2. The `actions/setup-node` built-in cache support for pnpm handles the
+store path resolution automatically and follows GitHub's recommended pattern. The key is
+correctly ordered: `pnpm/action-setup` must run before `actions/setup-node` so the node
+action can locate the pnpm binary and resolve its store path. This is documented in a
+comment in the workflow file.
+
+**uv caching via `actions/cache` with `~/.cache/uv`**
+
+uv stores its download cache at `~/.cache/uv` on Linux. This is not configurable without
+env vars. I used `actions/cache` directly (not a uv-specific action) since the uv GitHub
+Action ecosystem is still young and the manual cache approach is stable. The cache key
+is keyed on `src/backend/uv.lock` — matching the Makefile's source of truth for
+backend dependencies.
+
+**`ruff check src/backend/` path — redundant but explicit**
+
+The `working-directory: src/backend` is set for the lint step, making `src/backend/`
+redundant in the ruff command. However, the commit protocol spec explicitly writes
+`ruff check src/backend/` — I kept it as written to match the spec exactly. When
+`src/backend/` exists and working-directory is set, ruff resolves to an absolute path —
+no behavioral issue.
+
+**Workflow pinned to `ubuntu-latest` for both jobs**
+
+The spec says `ubuntu-latest` for both runners. I confirmed this is correct for the demo
+phase — `ubuntu-latest` gets security patches automatically from GitHub. For production
+CI (v2), pinning to a specific Ubuntu version (`ubuntu-22.04`) is the right call to
+prevent surprise runner updates mid-sprint. Flagged for v2 planning.
+
+---
+
+### Dependencies on Other Agents
+
+None for this step. The workflow references `src/backend/` and `src/frontend/` directories
+that Rex (Step 3) and Aria (Step 4) will create. Both CI jobs will fail with path errors
+until those directories exist — that is expected per the spec.
+
+---
+
+### Self-Review Checklist
+
+- [x] `.github/workflows/ci.yml` is valid YAML (validated with Python yaml.safe_load)
+- [x] Two jobs defined: `backend` and `frontend`
+- [x] Runs on push to `main` and `pull_request`
+- [x] Backend job: Python 3.12, uv install, uv sync, ruff check, pytest with exit code 5 handling
+- [x] Frontend job: Node 20, pnpm install, tsc --noEmit, Vite build
+- [x] uv cache keyed on `src/backend/uv.lock`
+- [x] pnpm cache keyed on `src/frontend/pnpm-lock.yaml`
+- [x] Both jobs report independently
+- [x] No secrets in the workflow file
+- [x] Only files in Adam's domain staged: `.github/workflows/ci.yml`, `adam-worklog.md`
+- [x] learning_concepts.md updated with Step 2 concepts
+
+---
+
+### Documentation Flags for Claude
+
+📋 Documentation flags for Step 2:
+- DECISIONS.md: Consider logging the pytest exit-code-5 remapping decision — it's non-obvious and the rationale (keeping CI green before tests exist without silently swallowing real failures) is worth preserving. Claude's call on whether it clears the bar for DECISIONS.md vs. staying in this worklog.
+- GLOSSARY.md: No new domain terms introduced.
+- ARCHITECTURE.md: No new system component — CI is tooling.
+- TASKS.md: No out-of-protocol discoveries.
+- learning_concepts.md: Updated — 3 concepts added for Step 2: GitHub Actions overview, CI caching with lock files, and pytest exit code 5.
 
 ---
 

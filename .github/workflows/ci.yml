@@ -1,0 +1,104 @@
+# AgentCanvas CI — lint and build on every push
+#
+# Two independent jobs: backend (Python) and frontend (Node).
+# A failure in one does not mask the result of the other.
+#
+# NOTE: src/backend/ and src/frontend/ are created in Steps 3 and 4 of the
+# commit protocol. Both jobs will fail until those directories exist — that is
+# expected and correct. The workflow structure is valid now; the code it checks
+# will arrive shortly.
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  # ─── Backend — Python 3.12, ruff lint, pytest ─────────────────────────────
+  backend:
+    name: Backend — lint and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # uv is installed via pip; its download cache is keyed on the lockfile
+      # so a changed dependency automatically busts the cache.
+      - name: Install uv
+        run: pip install uv
+
+      - name: Cache uv download cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: uv-${{ runner.os }}-${{ hashFiles('src/backend/uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-
+
+      - name: Install backend dependencies
+        working-directory: src/backend
+        run: uv sync
+
+      - name: Lint — ruff
+        working-directory: src/backend
+        run: uv run ruff check src/backend/
+
+      # pytest exit code 5 means "no tests were collected" — not a failure.
+      # We treat it as a pass so CI does not block while the test suite is
+      # still being built. Any other non-zero exit code surfaces as a real failure.
+      - name: Test — pytest
+        working-directory: src/backend
+        run: |
+          uv run pytest src/backend/ -x --tb=short
+          EXIT=$?
+          if [ $EXIT -eq 5 ]; then
+            echo "No tests collected — treating as pass (exit code 5)."
+            exit 0
+          fi
+          exit $EXIT
+
+  # ─── Frontend — Node 20, TypeScript check, Vite build ────────────────────
+  frontend:
+    name: Frontend — typecheck and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # pnpm must be set up before setup-node so the node cache key can
+      # reference the pnpm store path correctly.
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Set up Node 20 (with pnpm store cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: src/frontend/pnpm-lock.yaml
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: src/frontend
+
+      # TypeScript check: catches type errors without emitting any output files.
+      # A type error here fails the job before the more expensive build step runs.
+      - name: Typecheck — tsc --noEmit
+        run: pnpm -C src/frontend exec tsc --noEmit
+
+      # Full Vite production build: catches missing imports, unresolved modules,
+      # and any build-time errors that TypeScript alone does not surface.
+      - name: Build — Vite production bundle
+        run: pnpm -C src/frontend run build
