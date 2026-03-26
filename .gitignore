@@ -1,5 +1,6 @@
-# Claude Code local settings — machine-specific, never commit
+# Claude Code local settings and internal memory — never commit
 .claude/settings.local.json
+memory/
 
 # Environment variables — secrets must never be committed
 .env
