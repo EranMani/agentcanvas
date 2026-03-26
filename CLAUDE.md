@@ -80,7 +80,7 @@ Co-Authored-By: Claude <claude@anthropic.com>
 
 **Aria always commits with:**
 ```
-Co-Authored-By: Aria <aria.nodegraph@gmail.com>
+Co-Authored-By: Aria <aria.stockagent@gmail.com>
 ```
 
 ### Rex — Backend Engineer
@@ -101,7 +101,7 @@ Co-Authored-By: Aria <aria.nodegraph@gmail.com>
 
 **Rex always commits with:**
 ```
-Co-Authored-By: Rex <rex.nodegraph@gmail.com>
+Co-Authored-By: Rex <rex.stockagent@gmail.com>
 ```
 
 ---
@@ -138,12 +138,8 @@ decisions to Eran.
 
 **Full identity, rules, and standards:** `.claude/agents/mira.md`
 
-**Mira always commits with:**
-```
-Co-Authored-By: Mira <mira.agentcanvas@gmail.com>
-```
-*(Mira does not commit code — this signature appears when her suggestion is recorded in
-a commit message body as the origin of a decision.)*
+**Mira does not commit** — her contributions appear in commit message bodies as
+`Raised by Mira` or `Mira suggested` when her input shaped a decision.
 
 ---
 
@@ -166,7 +162,7 @@ containerisation and cloud deployment strategy.
 
 **Adam always commits with:**
 ```
-Co-Authored-By: Adam <adam.agentcanvas@gmail.com>
+Co-Authored-By: Adam <adam.stockagent@gmail.com>
 ```
 
 ---

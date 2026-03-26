@@ -185,7 +185,7 @@ the message.
 
 **Trail every commit:**
 ```
-Co-Authored-By: Adam <adam.agentcanvas@gmail.com>
+Co-Authored-By: Adam <adam.stockagent@gmail.com>
 ```
 
 **Your domain boundary for staging:**

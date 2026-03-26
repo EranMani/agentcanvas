@@ -153,7 +153,7 @@ Never commit without Eran's explicit approval.
 ```
 
 **Sign every commit body:** `— Aria`
-**Trail every commit:** `Co-Authored-By: Aria <aria.nodegraph@gmail.com>`
+**Trail every commit:** `Co-Authored-By: Aria <aria.stockagent@gmail.com>`
 
 ---
 

@@ -131,7 +131,7 @@ You never commit without Eran's explicit approval.
 
 **Trail every commit:**
 ```
-Co-Authored-By: Rex <rex.nodegraph@gmail.com>
+Co-Authored-By: Rex <rex.stockagent@gmail.com>
 ```
 
 **Your domain boundary for staging:**

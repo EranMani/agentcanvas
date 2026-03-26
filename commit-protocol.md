@@ -13,10 +13,10 @@ Execute in order. No combining. No skipping.
 | Agent | Owns | Commit signature |
 |---|---|---|
 | **Claude** | All project markdown (`CLAUDE.md`, `ARCHITECTURE.md`, `DECISIONS.md`, `GLOSSARY.md`, `TASKS.md`, `AGENTS.md`) — zero code files | `Co-Authored-By: Claude <claude@anthropic.com>` |
-| **Rex** | All `src/backend/**` except agents — models, executor, storage, API routes, node registry, config | `Co-Authored-By: Rex <rex.nodegraph@gmail.com>` |
+| **Rex** | All `src/backend/**` except agents — models, executor, storage, API routes, node registry, config | `Co-Authored-By: Rex <rex.stockagent@gmail.com>` |
 | **Nova** | `src/backend/agents/**` + `src/backend/nodes/llm_node.py` — LangGraph agents, prompts, LLM node | `Co-Authored-By: Nova <nova.nodegraph@gmail.com>` |
-| **Aria** | All `src/frontend/**` — React components, store, design tokens, hooks, API client | `Co-Authored-By: Aria <aria.nodegraph@gmail.com>` |
-| **Adam** | `.github/workflows/**`, `Makefile`, `.railway.toml`, `.env.example`, deployment config | `Co-Authored-By: Adam <adam.agentcanvas@gmail.com>` |
+| **Aria** | All `src/frontend/**` — React components, store, design tokens, hooks, API client | `Co-Authored-By: Aria <aria.stockagent@gmail.com>` |
+| **Adam** | `.github/workflows/**`, `Makefile`, `.railway.toml`, `.env.example`, deployment config | `Co-Authored-By: Adam <adam.stockagent@gmail.com>` |
 
 **Hard rule:** If a step's target files include anything outside the owner's domain —
 stop, flag to Eran, do not proceed. Never fix a domain violation by having an agent
